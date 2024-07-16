@@ -1,0 +1,73 @@
+local decalsyeeted = true
+	local g = game
+	game:GetService("Workspace").Terrain.WaterWaveSize = 0
+	game:GetService("Workspace").Terrain.WaterWaveSpeed = 0
+	game:GetService("Workspace").Terrain.WaterReflectance = 0
+	game:GetService("Workspace").Terrain.WaterTransparency = 0
+	game:GetService("Lighting").GlobalShadows = false
+	game:GetService("Lighting").FogEnd = 9e9
+	game:GetService("Lighting").Brightness = 0
+	settings().Rendering.QualityLevel = "Level01"
+	for _, v in pairs(g:GetDescendants()) do
+		if v:IsA("Part") or v:IsA("Union") or v:IsA("CornerWedgePart") or v:IsA("TrussPart") then
+			v.Material = "Plastic"
+			v.Reflectance = 0
+		elseif v:IsA("Decal") or v:IsA("Texture") and decalsyeeted then
+			v.Transparency = 1
+		elseif v:IsA("ParticleEmitter") or v:IsA("Trail") then
+			v.Lifetime = NumberRange.new(0)
+		elseif v:IsA("Explosion") then
+			v.BlastPressure = 1
+			v.BlastRadius = 1
+		elseif v:IsA("Fire") or v:IsA("SpotLight") or v:IsA("Smoke") then
+			v.Enabled = false
+		elseif v:IsA("MeshPart") then
+			v.Material = "Plastic"
+			v.Reflectance = 0
+			v.TextureID = 10385902758728957
+		end
+	end
+	for _, e in pairs(LI:GetChildren()) do
+		if e:IsA("BlurEffect") or e:IsA("SunRaysEffect") or e:IsA("ColorCorrectionEffect") or e:IsA("BloomEffect") or e:IsA("DepthOfFieldEffect") then
+			e.Enabled = false
+		end
+	end
+
+
+local TextLabel = Instance.new("TextLabel")
+
+TextLabel.Parent = game:GetService("CoreGui")["UI V2"]
+TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+TextLabel.BackgroundTransparency = 1.000
+TextLabel.Position = UDim2.new(0.0745672435, 0, 0.0299251862, 0)
+TextLabel.Size = UDim2.new(0, 1216, 0, 50)
+TextLabel.Font = Enum.Font.SourceSans
+TextLabel.Text = "FPS: Loading"
+TextLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
+TextLabel.TextSize = 47.000
+TextLabel.TextWrapped = true
+TextLabel.Name = "FPStext"
+TextLabel.Visible = false
+
+FPSAverage = {}
+local Ticking = false
+local LastTick = tick()
+
+local RunService = game:GetService("RunService")
+RunService:BindToRenderStep("UpdateInfo", 1000, function()
+	if Ticking == true then
+		local fps = math.floor(.5 + (1 / (tick() - LastTick)))
+		local sum = 0
+		local ave = 0
+		table.insert(FPSAverage, fps)
+		for i = 1, #FPSAverage do
+			sum = sum + FPSAverage[i]
+		end
+		game:GetService("CoreGui")["UI V2"].FPStext.Text = "FPS: " .. tostring(fps) .. " Average: " .. string.format("%.0f", (sum / #FPSAverage))
+		if (tick() - LastTick) >= 15 then
+			FPSAverage = { }
+			LastTick = tick()
+		end
+		LastTick = tick()
+	end
+end)
